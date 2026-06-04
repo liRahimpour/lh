@@ -19,26 +19,6 @@ public class SourceFileController {
         this.sourceFileService = sourceFileService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public SourceFileResponse createSourceFile(
-            @PathVariable UUID projectId,
-            @Valid @RequestBody CreateSourceFileRequest request
-    ) {
-        SourceFile sourceFile = sourceFileService.createSourceFile(
-                projectId,
-                request.path(),
-                request.filename(),
-                request.extension(),
-                request.language(),
-                request.sizeBytes(),
-                request.contentHash(),
-                request.storageKey()
-        );
-
-        return SourceFileResponse.from(sourceFile);
-    }
-
     @GetMapping
     public List<SourceFileResponse> getSourceFilesByProjectId(@PathVariable UUID projectId) {
         return sourceFileService.getSourceFilesByProjectId(projectId)
