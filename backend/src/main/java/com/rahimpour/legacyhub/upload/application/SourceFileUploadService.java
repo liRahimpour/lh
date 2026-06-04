@@ -1,5 +1,6 @@
 package com.rahimpour.legacyhub.upload.application;
 
+import com.rahimpour.legacyhub.sourcefile.application.FileLanguageDetector;
 import com.rahimpour.legacyhub.sourcefile.application.SourceFileService;
 import com.rahimpour.legacyhub.sourcefile.domain.SourceFile;
 import com.rahimpour.legacyhub.sourcefile.domain.SourceFileLanguage;
@@ -10,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayInputStream;
 import java.security.MessageDigest;
 import java.util.HexFormat;
-import java.util.Locale;
 import java.util.UUID;
 
 @Service
@@ -18,13 +18,15 @@ public class SourceFileUploadService {
 
     private final StorageService storageService;
     private final SourceFileService sourceFileService;
+    private final FileLanguageDetector fileLanguageDetector;
 
     public SourceFileUploadService(
             StorageService storageService,
-            SourceFileService sourceFileService
+            SourceFileService sourceFileService, FileLanguageDetector fileLanguageDetector
     ) {
         this.storageService = storageService;
         this.sourceFileService = sourceFileService;
+        this.fileLanguageDetector = fileLanguageDetector;
     }
 
     public SourceFile uploadSourceFile(UUID projectId, MultipartFile file) {
@@ -36,8 +38,8 @@ public class SourceFileUploadService {
             byte[] bytes = file.getBytes();
 
             String originalFilename = normalizeFilename(file.getOriginalFilename());
-            String extension = extractExtension(originalFilename);
-            SourceFileLanguage language = detectLanguage(extension);
+            String extension = fileLanguageDetector.extractExtension(originalFilename);
+            SourceFileLanguage language = fileLanguageDetector.detectByFilename(originalFilename);
             String contentHash = sha256(bytes);
             String storageKey = buildStorageKey(projectId, originalFilename);
 
@@ -69,32 +71,6 @@ public class SourceFileUploadService {
         }
 
         return originalFilename.replace("\\", "/");
-    }
-
-    private String extractExtension(String filename) {
-        int lastSlash = filename.lastIndexOf('/');
-        String justName = lastSlash >= 0 ? filename.substring(lastSlash + 1) : filename;
-
-        int dotIndex = justName.lastIndexOf('.');
-        if (dotIndex < 0 || dotIndex == justName.length() - 1) {
-            return "";
-        }
-
-        return justName.substring(dotIndex + 1).toLowerCase(Locale.ROOT);
-    }
-
-    private SourceFileLanguage detectLanguage(String extension) {
-        return switch (extension.toLowerCase(Locale.ROOT)) {
-            case "cs" -> SourceFileLanguage.CSHARP;
-            case "pas" -> SourceFileLanguage.DELPHI;
-            case "dfm" -> SourceFileLanguage.DELPHI_FORM;
-            case "dpr" -> SourceFileLanguage.DELPHI_PROJECT;
-            case "sql" -> SourceFileLanguage.SQL;
-            case "xml" -> SourceFileLanguage.XML;
-            case "json" -> SourceFileLanguage.JSON;
-            case "config", "properties", "yml", "yaml" -> SourceFileLanguage.CONFIG;
-            default -> SourceFileLanguage.UNKNOWN;
-        };
     }
 
     private String sha256(byte[] bytes) {
