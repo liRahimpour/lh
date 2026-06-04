@@ -38,10 +38,10 @@ jobs:
 
     steps: # Steps for building and testing the backend
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.3
 
       - name: Set up Java 21 # Set up Java 21
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v5.2.0
         with:
           distribution: temurin
           java-version: 21
