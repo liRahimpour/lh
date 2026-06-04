@@ -1,0 +1,223 @@
+{
+  "info": {
+    "_postman_id": "081e0ee8-e98e-4ddd-ae65-37198dba4251",
+    "name": "lh",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "14062340"
+  },
+  "item": [
+    {
+      "name": "project",
+      "item": [
+        {
+          "name": "create a project",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"ev Legacys\",\n  \"description\": \"Legacy java syst\",\n  \"technologyHint\": \"c#_CSHARP_SQL\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all projects",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}/api/projects",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get a project by UUID",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ping",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}/api/ping",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "ping"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "sourcefile",
+      "item": [
+        {
+          "name": "create source file",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"path\": \"src/forms/CustomerForm.pas\",\n  \"filename\": \"CustomerForm.pas\",\n  \"extension\": \"pas\",\n  \"language\": \"DELPHI\",\n  \"sizeBytes\": 34211,\n  \"contentHash\": \"abc123\",\n  \"storageKey\": \"projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source/src/forms/CustomerForm.pas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source-files",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "source-files"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get all Sourcefile by Projectid",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"path\": \"src/forms/CustomerForm.pas\",\n  \"filename\": \"CustomerForm.pas\",\n  \"extension\": \"pas\",\n  \"language\": \"DELPHI\",\n  \"sizeBytes\": 34211,\n  \"contentHash\": \"abc123\",\n  \"storageKey\": \"projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source/src/forms/CustomerForm.pas\"\n}"
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source-files",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "source-files"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get a sourcefile by Id",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"path\": \"src/forms/CustomerForm.pas\",\n  \"filename\": \"CustomerForm.pas\",\n  \"extension\": \"pas\",\n  \"language\": \"DELPHI\",\n  \"sizeBytes\": 34211,\n  \"contentHash\": \"abc123\",\n  \"storageKey\": \"projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source/src/forms/CustomerForm.pas\"\n}"
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source-files/160e5e2e-2d85-4e91-ac39-ef2dff7c3b94",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "source-files",
+                "160e5e2e-2d85-4e91-ac39-ef2dff7c3b94"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "localhost",
+      "value": ""
+    }
+  ]
+}

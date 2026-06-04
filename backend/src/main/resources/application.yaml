@@ -7,6 +7,7 @@ spring:
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -14,6 +15,22 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
+
+  flyway:
+    enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+legacyhub:
+  storage:
+    minio:
+      endpoint: http://lh-minio:9000
+      access-key: admin
+      secret-key: adminadmin
+      bucket: legacyhub
 logging:
   level:
     root: INFO
