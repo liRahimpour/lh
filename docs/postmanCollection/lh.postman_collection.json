@@ -79,59 +79,12 @@
             }
           },
           "response": []
-        },
-        {
-          "name": "ping",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{localhost}}/api/ping",
-              "host": [
-                "{{localhost}}"
-              ],
-              "path": [
-                "api",
-                "ping"
-              ]
-            }
-          },
-          "response": []
         }
       ]
     },
     {
       "name": "sourcefile",
       "item": [
-        {
-          "name": "create source file",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"path\": \"src/forms/CustomerForm.pas\",\n  \"filename\": \"CustomerForm.pas\",\n  \"extension\": \"pas\",\n  \"language\": \"DELPHI\",\n  \"sizeBytes\": 34211,\n  \"contentHash\": \"abc123\",\n  \"storageKey\": \"projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source/src/forms/CustomerForm.pas\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/source-files",
-              "host": [
-                "{{localhost}}"
-              ],
-              "path": [
-                "api",
-                "projects",
-                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
-                "source-files"
-              ]
-            }
-          },
-          "response": []
-        },
         {
           "name": "get all Sourcefile by Projectid",
           "protocolProfileBehavior": {
@@ -188,6 +141,166 @@
           "response": []
         }
       ]
+    },
+    {
+      "name": "storage and upload",
+      "item": [
+        {
+          "name": "upload a file",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "description": "test delfi",
+                  "type": "file",
+                  "uuid": "3d6c3bd3-b037-4eb8-8f98-c180126269cd",
+                  "src": "/Users/machava/IdeaProjects/java/lh/test-assets/legacy-samples/delphi/SingleCustomerForm.pas"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/uploads/source-file",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "uploads",
+                "source-file"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "upload a Zip",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "uuid": "4689047b-d726-4ced-96a2-af7f80dfe6e3",
+                  "src": "/Users/machava/IdeaProjects/java/lh/test-assets/legacy-samples/zip/test-legacy-project.zip"
+                }
+              ]
+            },
+            "url": {
+              "raw": "POST\n{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/uploads/source-archive",
+              "host": [
+                "POST\n{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "uploads",
+                "source-archive"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "codeSymbole",
+      "item": [
+        {
+          "name": "get Symboles by Project id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/symbols",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "symbols"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get a symbols by Project and symbol id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/symbols/d675e827-1cae-444f-994e-411be68833ae",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "symbols",
+                "d675e827-1cae-444f-994e-411be68833ae"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "analyse",
+      "item": [
+        {
+          "name": "analyse von symbole",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{localhost}}/api/projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/analysis/symbols",
+              "host": [
+                "{{localhost}}"
+              ],
+              "path": [
+                "api",
+                "projects",
+                "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+                "analysis",
+                "symbols"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{localhost}}/api/ping",
+          "host": [
+            "{{localhost}}"
+          ],
+          "path": [
+            "api",
+            "ping"
+          ]
+        }
+      },
+      "response": []
     }
   ],
   "event": [
