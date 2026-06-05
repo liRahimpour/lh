@@ -88,11 +88,4 @@ jobs:
       - name: Build and test backend
         run: ./mvnw clean verify
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/legacyhub
-          SPRING_DATASOURCE_USERNAME: legacyhub
-          SPRING_DATASOURCE_PASSWORD: legacyhub
-
-          MINIO_ENDPOINT: http://localhost:9000
-          MINIO_ACCESS_KEY: admin
-          MINIO_SECRET_KEY: adminadmin
-          MINIO_BUCKET: legacyhub
+          SPRING_PROFILES_ACTIVE: ci
