@@ -1,3 +1,5 @@
+# TODO: compose application.yaml -> later should be in a separate file not default: application-compose.yaml
+
 server:
   port: 8081
 
