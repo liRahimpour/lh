@@ -48,6 +48,7 @@ jobs:
           cache: maven
 
       - name: Start MinIO
+        working-directory: .
         run: |
           docker run -d \
             --name minio \
@@ -58,6 +59,7 @@ jobs:
             minio/minio:latest server /data --console-address ":9001"
 
       - name: Wait for MinIO
+        working-directory: .
         run: |
           for i in {1..30}; do
             if curl -f http://localhost:9000/minio/health/live; then
@@ -73,15 +75,15 @@ jobs:
           exit 1
 
       - name: Create MinIO bucket
+        working-directory: .
         run: |
-          docker run --rm --network host minio/mc:latest \
-            alias set local http://localhost:9000 admin adminadmin
+          docker run --rm --network host \
+            -e MC_HOST_local=http://admin:adminadmin@localhost:9000 \
+            minio/mc:latest mb --ignore-existing local/legacyhub
 
-          docker run --rm --network host minio/mc:latest \
-            mb --ignore-existing local/legacyhub
-
-          docker run --rm --network host minio/mc:latest \
-            ls local
+          docker run --rm --network host \
+            -e MC_HOST_local=http://admin:adminadmin@localhost:9000 \
+            minio/mc:latest ls local
 
       - name: Build and test backend
         run: ./mvnw clean verify
