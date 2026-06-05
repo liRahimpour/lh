@@ -1,0 +1,59 @@
+# IMPORTANT:
+# This profile is used for GitHub Actions CI.
+#
+# The default application.yml is configured for Docker Compose.
+# In Docker Compose, the backend runs inside the same Docker network as Postgres and MinIO,
+# so service names like "lh-postgres" and "lh-minio" are resolvable.
+#
+# In GitHub Actions, the backend tests run directly on the GitHub runner, not inside the
+# Docker Compose network. Therefore, Docker Compose service names such as "lh-minio"
+# cannot be resolved and would cause errors like:
+#
+#   java.net.UnknownHostException: lh-minio
+#
+# For CI, Postgres and MinIO are exposed via mapped localhost ports:
+#
+#   Postgres -> localhost:5432
+#   MinIO    -> localhost:9000
+#
+# That is why this CI profile must use "localhost" instead of Docker Compose service names.
+
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/legacyhub
+    username: legacyhub
+    password: legacyhub
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: true
+
+  flyway:
+    enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+legacyhub:
+  storage:
+    minio:
+      endpoint: http://localhost:9000
+      access-key: admin
+      secret-key: adminadmin
+      bucket: legacyhub
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: ERROR
+    org.hibernate: ERROR
