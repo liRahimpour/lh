@@ -3,6 +3,7 @@ lh-dev-postgres/pg_in_docker/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+docs/temp.md
 .kotlin
 
 
