@@ -40,7 +40,7 @@ The planned system should support:
 - Storing source files in object storage such as MinIO
 - Storing code relationships in Neo4j
 - Storing semantic code chunks in Qdrant
-- Providing an AI assistant using RAG (chat with Code)
+- Providing an AI assistant using RAG (chat with code)
 - Generating technical documentation
 - Supporting onboarding for new developers
 - Supporting transformation and modernization planning
@@ -69,6 +69,42 @@ The MVP focuses on a small and realistic scope first.
 
 ---
 
+## Current MVP Progress
+
+Implemented:
+
+- Project management
+- Source file metadata management
+- MinIO file storage
+- Single source file upload
+- ZIP archive upload and extraction
+- Automatic file language detection
+- Automatic SHA-256 file hashing
+- Storage key generation
+- Source file storage in MinIO
+- SQL symbol extraction
+- Code symbol persistence
+- Symbol analysis API
+- GitHub Actions backend CI
+
+Currently in development:
+
+- Delphi analyzer
+- C# analyzer
+- Code relationships
+- Neo4j integration
+
+Planned:
+
+- Git import with JGit
+- SVN import
+- Vector search with Qdrant
+- AI assistant with RAG
+- Documentation generation
+- Transformation support
+
+---
+
 ## Current Features
 
 The project currently supports:
@@ -77,8 +113,16 @@ The project currently supports:
 - PostgreSQL integration
 - Flyway database migrations
 - Docker Compose infrastructure
+- MinIO object storage integration
 - Project management API
 - Source file metadata API
+- Single source file upload
+- ZIP archive upload and extraction
+- Automatic file language detection
+- Automatic file hashing with SHA-256
+- Source file storage in MinIO
+- Code symbol extraction framework
+- SQL analyzer
 - GitHub Actions backend CI
 
 Implemented APIs:
@@ -99,22 +143,38 @@ GET  /api/projects/{projectId}/source-files
 GET  /api/projects/{projectId}/source-files/{sourceFileId}
 ```
 
+### Upload API
+
+```http
+POST /api/projects/{projectId}/uploads/source-file
+POST /api/projects/{projectId}/uploads/source-archive
+```
+
+### Code Symbol API
+
+```http
+GET /api/projects/{projectId}/symbols
+GET /api/projects/{projectId}/symbols/{symbolId}
+```
+
+### Analysis API
+
+```http
+POST /api/projects/{projectId}/analysis/symbols
+```
+
 ---
 
 ## Planned Features
 
 The next development steps are:
 
-- MinIO integration for file storage
-- Upload API for real source files
-- Automatic source file metadata extraction
-- ZIP upload support
+- Basic Delphi code analysis
+- Basic C# code analysis
+- Code relationship extraction
+- Neo4j integration for code relationships
 - Git import support with JGit
 - SVN import support
-- Basic C# code analysis
-- Basic Delphi code analysis
-- SQL analysis
-- Neo4j integration for code relationships
 - Qdrant integration for vector search
 - AI/RAG assistant for code questions
 - Markdown documentation generation
@@ -141,6 +201,7 @@ backend/
     ├── storage/
     ├── upload/
     ├── analysis/
+    ├── codesymbol/
     ├── knowledgegraph/
     ├── vectorsearch/
     ├── assistant/
@@ -204,17 +265,17 @@ SourceFile
 
 ### Storage Module
 
-The storage module is planned for storing real files.
+The storage module stores real files in object storage.
 
 Responsibilities:
 
-- Store uploaded files
+- Store uploaded source files
 - Store original ZIP archives
 - Store extracted source files
-- Store generated documentation
-- Store export files
+- Store generated documentation in later phases
+- Store export files in later phases
 
-Planned technology:
+Current technology:
 
 - MinIO
 
@@ -224,40 +285,100 @@ Later, the storage backend could be replaced by:
 - Azure Blob Storage
 - Any S3-compatible object storage
 
+The application depends on a storage port, not directly on MinIO. This keeps the backend replaceable.
+
 ---
 
 ### Upload Module
 
-The upload module is planned for handling user uploads.
+The upload module handles user uploads.
 
 Responsibilities:
 
-- Accept source file uploads
-- Accept ZIP uploads
+- Accept single source file uploads
+- Accept ZIP archive uploads
 - Validate uploaded files
 - Calculate file hashes
+- Detect file language by filename or extension
 - Store files in object storage
 - Create corresponding source file metadata records
+
+Currently implemented:
+
+- Single source file upload
+- ZIP archive upload
+- ZIP extraction
+- Ignore rules for irrelevant files and folders
+- SourceFile record creation after upload
 
 ---
 
 ### Analysis Module
 
-The analysis module is planned for code analysis.
+The analysis module provides pluggable source code analyzers.
 
 Responsibilities:
 
-- Analyze C# source code
-- Analyze Delphi source code
-- Analyze SQL files
-- Extract classes, methods, procedures, forms, events, database access, and dependencies
+- Analyze source files
+- Extract structural code symbols
+- Support multiple analyzers through a common `SourceFileAnalyzer` interface
+- Keep analyzer logic independent from persistence
+
+Current implementation:
+
+- Symbol extraction framework
+- SQL analyzer
+
+Current SQL analyzer extracts:
+
+- SQL tables
+- SQL views
+- SQL procedures
+- SQL functions
 
 Planned analyzers:
 
-- C# analyzer based on Roslyn
-- Delphi structure parser
-- SQL parser
-- Config file analyzer
+- Delphi analyzer
+- C# analyzer
+- Configuration analyzer
+
+---
+
+### Code Symbol Module
+
+The code symbol module stores structural elements extracted from source code.
+
+Responsibilities:
+
+- Store extracted code symbols
+- Link symbols to source files
+- Link symbols to projects
+- Provide APIs for symbol exploration
+- Provide the foundation for future relationship analysis
+
+Examples:
+
+```text
+SQL_TABLE
+SQL_VIEW
+SQL_PROCEDURE
+SQL_FUNCTION
+
+CLASS
+METHOD
+PROPERTY
+
+DELPHI_UNIT
+PROCEDURE
+FUNCTION
+EVENT_HANDLER
+```
+
+Example entity:
+
+```text
+CodeSymbol
+```
 
 ---
 
@@ -395,6 +516,7 @@ This makes it easier to replace infrastructure later.
 - Maven
 - Flyway
 - PostgreSQL
+- MinIO Java SDK
 
 ### Infrastructure
 
@@ -431,8 +553,9 @@ PostgreSQL stores structured application data:
 
 - Projects
 - Source file metadata
-- Import jobs
-- Analysis jobs
+- Code symbols
+- Future import jobs
+- Future analysis jobs
 - Status information
 
 PostgreSQL does **not** store large source files directly.
@@ -441,13 +564,14 @@ PostgreSQL does **not** store large source files directly.
 
 ### MinIO
 
-MinIO is planned as object storage for real files:
+MinIO is used as object storage for real files:
 
-- Uploaded ZIP files
-- Source files
-- Generated documentation
-- Export files
-- Analysis artifacts
+- Uploaded ZIP archives
+- Uploaded source files
+- Extracted source files
+- Future generated documentation
+- Future export files
+- Future analysis artifacts
 
 PostgreSQL stores only the `storageKey` pointing to the file in MinIO.
 
@@ -712,6 +836,133 @@ GET /api/projects/{projectId}/source-files/{sourceFileId}
 
 ---
 
+## Upload API
+
+### Upload a Single Source File
+
+```http
+POST /api/projects/{projectId}/uploads/source-file
+Content-Type: multipart/form-data
+```
+
+Postman form-data:
+
+```text
+key: file
+type: File
+value: CustomerForm.pas
+```
+
+The system will:
+
+- Store the file in MinIO
+- Detect the file language
+- Calculate a SHA-256 hash
+- Create a SourceFile metadata record in PostgreSQL
+
+---
+
+### Upload a ZIP Source Archive
+
+```http
+POST /api/projects/{projectId}/uploads/source-archive
+Content-Type: multipart/form-data
+```
+
+Postman form-data:
+
+```text
+key: file
+type: File
+value: legacy-project.zip
+```
+
+The system will:
+
+- Store the original ZIP archive in MinIO
+- Extract relevant source files
+- Ignore irrelevant folders and binary files
+- Store extracted source files in MinIO
+- Create SourceFile metadata records in PostgreSQL
+
+Example response:
+
+```json
+{
+  "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+  "archiveStorageKey": "projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/archives/legacy-project.zip",
+  "importedFiles": 5,
+  "skippedFiles": 2
+}
+```
+
+---
+
+## Analysis API
+
+### Run Symbol Analysis
+
+```http
+POST /api/projects/{projectId}/analysis/symbols
+```
+
+No request body is required.
+
+The current implementation runs synchronously and extracts code symbols from supported source files.
+
+Currently supported:
+
+- SQL files
+
+Example response:
+
+```json
+{
+  "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+  "analyzedFiles": 1,
+  "skippedFiles": 4,
+  "detectedSymbols": 4
+}
+```
+
+---
+
+## Code Symbol API
+
+### Get All Code Symbols for a Project
+
+```http
+GET /api/projects/{projectId}/symbols
+```
+
+Example response:
+
+```json
+[
+  {
+    "id": "a0907753-2f3c-46dd-b942-dbe695531911",
+    "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
+    "sourceFileId": "18f87950-e2e9-4366-9bbf-e650a31b38b7",
+    "type": "SQL_TABLE",
+    "name": "customer",
+    "fullyQualifiedName": "customer",
+    "startLine": 1,
+    "endLine": null,
+    "createdAt": "2026-06-05T21:19:23.631786Z"
+  }
+]
+```
+
+---
+
+### Get Code Symbol by ID
+
+```http
+GET /api/projects/{projectId}/symbols/{symbolId}
+```
+
+---
+
 ## Example Postman Setup
 
 Recommended Postman environment variable:
@@ -737,6 +988,7 @@ Current migrations:
 ```text
 V1__create_projects_table.sql
 V2__create_source_files_table.sql
+V3__create_code_symbols_table.sql
 ```
 
 Migrations are located in:
@@ -765,11 +1017,12 @@ Recommended development order:
 1. Build a small vertical slice.
 2. Test with Postman.
 3. Verify data in PostgreSQL.
-4. Commit changes.
-5. Let GitHub Actions run.
-6. Continue with the next small module.
+4. Verify files in MinIO when upload/storage is involved.
+5. Commit changes.
+6. Let GitHub Actions run.
+7. Continue with the next small module.
 
-> **Recommendation:** Avoid building AI features before the import, storage, and metadata foundation is stable.
+> **Recommendation:** Avoid building AI features before the import, storage, analysis, and metadata foundation is stable.
 
 ---
 
@@ -790,7 +1043,7 @@ Typical steps:
 
 ## Roadmap
 
-### Phase 1: Foundation
+### Phase 1: Foundation ✅
 
 - Spring Boot backend
 - PostgreSQL
@@ -799,32 +1052,32 @@ Typical steps:
 - Source file metadata API
 - Docker Compose infrastructure
 
-### Phase 2: Storage and Upload
+### Phase 2: Storage and Upload ✅
 
 - MinIO integration
 - Single source file upload
+- ZIP upload
 - Automatic metadata extraction
 - File hashing
 - Storage key generation
 
-### Phase 3: Import
+### Phase 3: Import In Progress
 
-- ZIP upload
 - ZIP extraction
 - File inventory generation
 - Git import
 - SVN import
 
-### Phase 4: Analysis
+### Phase 4: Analysis In Progress
 
+- Code symbols
+- SQL analyzer
 - C# analyzer
 - Delphi parser
-- SQL parser
 - Config parser
-- Code symbols
 - Code relations
 
-### Phase 5: Knowledge Graph
+### Phase 5: Knowledge Graph Planned
 
 - Neo4j integration
 - Store code entities
@@ -832,14 +1085,14 @@ Typical steps:
 - Query dependency chains
 - Generate diagrams
 
-### Phase 6: Vector Search
+### Phase 6: Vector Search Planned
 
 - Chunk source code
 - Generate embeddings
 - Store embeddings in Qdrant
 - Semantic code search
 
-### Phase 7: AI Assistant
+### Phase 7: AI Assistant Planned
 
 - RAG pipeline
 - Source-based answers
@@ -847,7 +1100,7 @@ Typical steps:
 - Onboarding questions
 - Confidence handling
 
-### Phase 8: Documentation
+### Phase 8: Documentation Planned
 
 - Markdown documentation generation
 - Mermaid diagrams
@@ -855,7 +1108,7 @@ Typical steps:
 - Module descriptions
 - Onboarding guide
 
-### Phase 9: Transformation Support
+### Phase 9: Transformation Support Planned
 
 - Legacy risk analysis
 - Dependency risk reports
@@ -871,7 +1124,7 @@ Typical steps:
 
 PostgreSQL stores metadata only.
 
-Actual files should be stored in object storage such as MinIO.
+Actual files are stored in object storage such as MinIO.
 
 ---
 
@@ -887,9 +1140,19 @@ This helps later deployment to Docker, Kubernetes, or cloud environments.
 
 ---
 
-### Analysis should run as jobs
+### Analyzer implementations should stay pluggable
 
-Long-running analysis tasks should not block HTTP requests.
+All language-specific analyzers should implement a common analyzer interface.
+
+This allows new analyzers to be added without changing the central analysis workflow.
+
+---
+
+### Analysis should run as jobs later
+
+The current symbol analysis endpoint is synchronous.
+
+Long-running analysis tasks should later not block HTTP requests.
 
 Planned model:
 
