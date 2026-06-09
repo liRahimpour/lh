@@ -26,6 +26,13 @@ spring:
       max-file-size: 100MB
       max-request-size: 100MB
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak.localhost:8082/realms/lh
+          jwk-set-uri: http://host.docker.internal:8082/realms/lh/protocol/openid-connect/certs
+
 legacyhub:
   storage:
     minio:
