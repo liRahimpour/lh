@@ -6,6 +6,7 @@ public enum SourceFileLanguage {
     DELPHI_FORM,
     DELPHI_PROJECT,
     SQL,
+    JAVA,
     CONFIG,
     XML,
     JSON,
