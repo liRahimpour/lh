@@ -1,0 +1,67 @@
+services:
+
+  postgres:
+    build: ../lh-dev-postgres
+    container_name: lh-postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - lh-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ${DATA_VOLUME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lh -d lh" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: lh-keycloak
+    command:
+      - start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8082:8080"
+    networks:
+      - lh-network
+    healthcheck:
+      test: [ "CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  minio:
+    image: minio/minio:latest
+    container_name: lh-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - lh-network
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: adminadmin
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+
+volumes:
+  postgres-data:
+  minio-data:
+
+networks:
+  lh-network:
+    external: true

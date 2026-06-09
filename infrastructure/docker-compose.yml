@@ -5,10 +5,18 @@ services:
     container_name: lh-backend
     ports:
       - "8081:8081"
+    extra_hosts:
+      - "keycloak.localhost:host-gateway"
     networks:
       - lh-network
     depends_on:
-      - "postgres"
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
 
   postgres:
     build: ../lh-dev-postgres
@@ -23,6 +31,30 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - ${DATA_VOLUME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U lh -d lh" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: lh-keycloak
+    command:
+      - start-dev
+      - --hostname=http://keycloak.localhost:8082
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8082:8080"
+    networks:
+      - lh-network
+    healthcheck:
+      test: [ "CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/8080' || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
   minio:
     image: minio/minio:latest
@@ -38,6 +70,11 @@ services:
       MINIO_ROOT_PASSWORD: adminadmin
     volumes:
       - minio-data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/ready" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
 
 volumes:

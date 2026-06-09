@@ -4,6 +4,7 @@ import com.rahimpour.legacyhub.project.application.ProjectService;
 import com.rahimpour.legacyhub.project.domain.Project;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ProjectController {
         this.projectService = projectService;
     }
 
+    @PreAuthorize("hasAuthority('PROJECT_WRITE')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ProjectResponse createProject(@Valid @RequestBody CreateProjectRequest request) {
@@ -31,6 +33,7 @@ public class ProjectController {
         return ProjectResponse.from(project);
     }
 
+    //@PreAuthorize("hasAuthority('PROJECT_READ')")
     @GetMapping
     public List<ProjectResponse> getAllProjects() {
         return projectService.getAllProjects()
