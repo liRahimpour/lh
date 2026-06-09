@@ -1,131 +1,164 @@
 # Legacy Knowledge Hub
 
-Legacy Knowledge Hub is a Java/Spring-based platform for preserving technical knowledge from legacy software systems.
+Legacy Knowledge Hub is a Java/Spring-based platform for preserving and structuring technical knowledge from legacy software systems.
 
-The goal of this project is to analyze old codebases, extract structural knowledge, store metadata and relationships, and provide AI-assisted documentation, chat, onboarding support, and transformation guidance.
+The goal is to import legacy codebases, analyze their structure, store technical metadata, and provide a foundation for documentation, onboarding, code exploration, and future AI-assisted modernization.
 
-This project is currently under active development.
+> This project is currently under active development.
 
 ---
 
-## Problem Statement
+## Problem
 
 Many organizations still depend on old but business-critical software systems.
 
-Typical problems are:
+Typical challenges are:
 
-- Legacy systems are poorly documented
-- Critical knowledge exists only in the heads of senior developers
-- Developers are retiring or leaving the company
-- Codebases are hard to understand and difficult to modernize
-- Migration and transformation projects are risky because system knowledge is incomplete
+- missing or outdated documentation
+- knowledge concentrated in a few senior developers
+- difficult onboarding for new team members
+- unclear dependencies inside old codebases
+- risky migration and modernization projects
 
-This project aims to help preserve and structure that knowledge before it is lost.
-
----
-
-## Vision
-
-When finished, Legacy Knowledge Hub should allow users to import legacy source code and automatically build a technical knowledge base around it.
-
-The planned system should support:
-
-- Importing source code from ZIP uploads
-- Importing code from Git repositories
-- Importing code from SVN repositories
-- Detecting source files and technologies
-- Analyzing legacy code structures
-- Extracting classes, methods, forms, procedures, SQL statements, and dependencies
-- Storing code metadata in PostgreSQL
-- Storing source files in object storage such as MinIO
-- Storing code relationships in Neo4j
-- Storing semantic code chunks in Qdrant
-- Providing an AI assistant using RAG (chat with code)
-- Generating technical documentation
-- Supporting onboarding for new developers
-- Supporting transformation and modernization planning
+Legacy Knowledge Hub aims to make this technical knowledge visible, searchable, and reusable.
 
 ---
 
-## Target Legacy Technologies
+## Current MVP Scope
 
-The first focus is on legacy enterprise systems, especially:
+The current MVP focuses on importing source files, storing metadata, and extracting basic code symbols.
 
-- Delphi
-- C#
-- .NET Framework
-- SQL
-- Configuration files
+Implemented features:
 
-Later, the system may support:
-
-- COBOL
-- VB6
-- Java
-- Mainframe-related technologies
-- Other legacy languages and platforms
-
-The MVP focuses on a small and realistic scope first.
-
----
-
-## Current MVP Progress
-
-Implemented:
-
-- Project management
-- Source file metadata management
-- MinIO file storage
-- Single source file upload
+- project management
+- source file metadata management
+- single source file upload
 - ZIP archive upload and extraction
-- Automatic file language detection
-- Automatic SHA-256 file hashing
-- Storage key generation
-- Source file storage in MinIO
+- automatic file language detection
+- SHA-256 file hashing
+- MinIO-based source file storage
 - SQL symbol extraction
-- Code symbol persistence
-- Symbol analysis API
+- code symbol persistence
+- symbol analysis API
 - GitHub Actions backend CI
 
 Currently in development:
 
 - Delphi analyzer
 - C# analyzer
-- Code relationships
+- code relationship extraction
 - Neo4j integration
 
-Planned:
+Planned features:
 
 - Git import with JGit
 - SVN import
-- Vector search with Qdrant
-- AI assistant with RAG
-- Documentation generation
-- Transformation support
+- vector search with Qdrant
+- AI assistant using RAG
+- automatic technical documentation generation
+- modernization and transformation reports
 
 ---
 
-## Current Features
+## Target Technologies
 
-The project currently supports:
+Initial focus:
 
-- Spring Boot backend
-- PostgreSQL integration
-- Flyway database migrations
-- Docker Compose infrastructure
-- MinIO object storage integration
-- Project management API
-- Source file metadata API
-- Single source file upload
-- ZIP archive upload and extraction
-- Automatic file language detection
-- Automatic file hashing with SHA-256
-- Source file storage in MinIO
-- Code symbol extraction framework
-- SQL analyzer
-- GitHub Actions backend CI
+- Delphi
+- C#
+- .NET Framework
+- SQL
+- configuration files
 
-Implemented APIs:
+Possible future support:
+
+- COBOL
+- VB6
+- Java
+- mainframe-related technologies
+- other legacy enterprise systems
+
+---
+
+## Architecture
+
+The application is currently designed as a **modular monolith**.
+
+This keeps the MVP simple while still allowing clear module boundaries and future growth.
+
+The backend follows a simplified hexagonal architecture:
+
+```text
+module/
+├── domain/
+├── application/
+├── ports/
+└── infrastructure/
+```
+
+Main modules:
+
+```text
+backend/src/main/java/com/rahimpour/legacyhub/
+├── project/
+├── sourcefile/
+├── storage/
+├── upload/
+├── analysis/
+├── codesymbol/
+├── knowledgegraph/
+├── vectorsearch/
+├── assistant/
+├── documentation/
+└── shared/
+```
+
+---
+
+## Technology Stack
+
+Backend:
+
+- Java 21
+- Spring Boot 3
+- Spring Web
+- Spring Data JPA
+- Spring Validation
+- Spring Boot Actuator
+- Maven
+- Flyway
+- PostgreSQL
+- MinIO Java SDK
+- Springdoc OpenAPI
+
+Infrastructure:
+
+- Docker
+- Docker Compose
+- PostgreSQL
+- MinIO
+
+Planned infrastructure:
+
+- Neo4j
+- Qdrant
+
+---
+
+## Storage Concept
+
+The application separates metadata from actual source files.
+
+- PostgreSQL stores structured metadata such as projects, source files, and extracted code symbols.
+- MinIO stores the actual uploaded and extracted source files.
+- Neo4j is planned for relationships between code elements.
+- Qdrant is planned for semantic code search and AI/RAG use cases.
+
+This separation keeps the system scalable and easier to evolve.
+
+---
+
+## Implemented APIs
 
 ### Project API
 
@@ -165,1019 +198,50 @@ POST /api/projects/{projectId}/analysis/symbols
 
 ---
 
-## Planned Features
+## Development Status
 
-The next development steps are:
+This project is still in an early MVP phase.
 
-- Basic Delphi code analysis
-- Basic C# code analysis
-- Code relationship extraction
-- Neo4j integration for code relationships
-- Git import support with JGit
-- SVN import support
-- Qdrant integration for vector search
-- AI/RAG assistant for code questions
-- Markdown documentation generation
-- Architecture and dependency diagrams
-- Legacy risk and transformation reports
+The current focus is on building a clean technical foundation before adding advanced AI and knowledge graph features.
+
+Next development steps:
+
+1. Complete basic Delphi analysis
+2. Complete basic C# analysis
+3. Extract relationships between code symbols
+4. Add Neo4j integration
+5. Add Git import support
+6. Add semantic search with Qdrant
+7. Add AI-assisted documentation and code chat
 
 ---
 
-## Architecture Overview
+## Documentation
 
-The project follows a **modular monolith architecture**.
+Detailed documentation will be added under `/docs`.
 
-At this stage, microservices are intentionally avoided. The goal is to keep the MVP simple, maintainable, and easy to evolve.
-
-The backend is structured around business modules instead of technical layers.
-
-Example:
+Planned documentation structure:
 
 ```text
-backend/
-└── src/main/java/com/lipad/legacyhub/
-    ├── project/
-    ├── sourcefile/
-    ├── storage/
-    ├── upload/
-    ├── analysis/
-    ├── codesymbol/
-    ├── knowledgegraph/
-    ├── vectorsearch/
-    ├── assistant/
-    ├── documentation/
-    └── shared/
-```
-
-Each module follows a simplified hexagonal architecture:
-
-```text
-module/
-├── domain/
-├── application/
-├── ports/
-└── infrastructure/
+docs/
+├── 00-overview.md
+├── 01-architecture.md
+├── 02-modules.md
+├── 03-api.md
+├── 04-data-model.md
+├── 05-runtime-flows.md
+├── 06-deployment.md
+├── 07-security.md
+├── 08-development-guide.md
+├── 09-roadmap.md
+├── 10-glossary.md
+└── adr/
 ```
 
 ---
 
-## Module Responsibilities
+## Project Goal
 
-### Project Module
+Legacy Knowledge Hub is not just a code upload tool.
 
-The project module manages legacy software projects.
-
-Responsibilities:
-
-- Create projects
-- Retrieve projects
-- Track project status
-- Provide the root entity for imports, source files, analysis jobs, and documentation
-
-Example entity:
-
-```text
-Project
-```
-
----
-
-### Source File Module
-
-The source file module manages metadata about source files.
-
-Responsibilities:
-
-- Store file metadata
-- Link files to projects
-- Store file path, extension, language, hash, and storage key
-- Provide APIs to retrieve source files for a project
-
-> **Important:** The actual file content is not stored in PostgreSQL. PostgreSQL stores only metadata.
-
-Example entity:
-
-```text
-SourceFile
-```
-
----
-
-### Storage Module
-
-The storage module stores real files in object storage.
-
-Responsibilities:
-
-- Store uploaded source files
-- Store original ZIP archives
-- Store extracted source files
-- Store generated documentation in later phases
-- Store export files in later phases
-
-Current technology:
-
-- MinIO
-
-Later, the storage backend could be replaced by:
-
-- Amazon S3
-- Azure Blob Storage
-- Any S3-compatible object storage
-
-The application depends on a storage port, not directly on MinIO. This keeps the backend replaceable.
-
----
-
-### Upload Module
-
-The upload module handles user uploads.
-
-Responsibilities:
-
-- Accept single source file uploads
-- Accept ZIP archive uploads
-- Validate uploaded files
-- Calculate file hashes
-- Detect file language by filename or extension
-- Store files in object storage
-- Create corresponding source file metadata records
-
-Currently implemented:
-
-- Single source file upload
-- ZIP archive upload
-- ZIP extraction
-- Ignore rules for irrelevant files and folders
-- SourceFile record creation after upload
-
----
-
-### Analysis Module
-
-The analysis module provides pluggable source code analyzers.
-
-Responsibilities:
-
-- Analyze source files
-- Extract structural code symbols
-- Support multiple analyzers through a common `SourceFileAnalyzer` interface
-- Keep analyzer logic independent from persistence
-
-Current implementation:
-
-- Symbol extraction framework
-- SQL analyzer
-
-Current SQL analyzer extracts:
-
-- SQL tables
-- SQL views
-- SQL procedures
-- SQL functions
-
-Planned analyzers:
-
-- Delphi analyzer
-- C# analyzer
-- Configuration analyzer
-
----
-
-### Code Symbol Module
-
-The code symbol module stores structural elements extracted from source code.
-
-Responsibilities:
-
-- Store extracted code symbols
-- Link symbols to source files
-- Link symbols to projects
-- Provide APIs for symbol exploration
-- Provide the foundation for future relationship analysis
-
-Examples:
-
-```text
-SQL_TABLE
-SQL_VIEW
-SQL_PROCEDURE
-SQL_FUNCTION
-
-CLASS
-METHOD
-PROPERTY
-
-DELPHI_UNIT
-PROCEDURE
-FUNCTION
-EVENT_HANDLER
-```
-
-Example entity:
-
-```text
-CodeSymbol
-```
-
----
-
-### Knowledge Graph Module
-
-The knowledge graph module is planned for storing relationships between code elements.
-
-Example relationships:
-
-```text
-CustomerForm
-  -> triggers
-BtnSaveClick
-
-BtnSaveClick
-  -> calls
-SaveCustomer
-
-SaveCustomer
-  -> writes
-CUSTOMER_TABLE
-```
-
-Planned technology:
-
-- Neo4j
-
----
-
-### Vector Search Module
-
-The vector search module is planned for semantic code search.
-
-Responsibilities:
-
-- Split source code into meaningful chunks
-- Generate embeddings for code chunks
-- Store embeddings
-- Search code by meaning, not only by exact words
-
-Planned technology:
-
-- Qdrant
-
----
-
-### Assistant Module
-
-The assistant module is planned for AI-based interaction with the codebase.
-
-Responsibilities:
-
-- Answer questions about legacy code
-- Explain code behavior
-- Support developer onboarding
-- Use retrieved project knowledge instead of guessing
-- Provide source-based answers
-
-Planned approach:
-
-- RAG - Retrieval Augmented Generation
-
----
-
-### Documentation Module
-
-The documentation module is planned for generating technical documentation.
-
-Responsibilities:
-
-- Generate architecture overviews
-- Generate module descriptions
-- Generate onboarding guides
-- Generate Markdown documentation
-- Generate Mermaid diagrams
-- Later export to PDF or DOCX
-
----
-
-## Why Modular Monolith?
-
-A modular monolith is used because the project is still in MVP phase.
-
-Advantages:
-
-- Simpler deployment
-- Easier debugging
-- Less infrastructure overhead
-- Clear module boundaries
-- Easier transition to microservices later if necessary
-
-Starting directly with microservices would add unnecessary complexity too early.
-
----
-
-## Why Hexagonal Architecture?
-
-Hexagonal architecture helps keep business logic independent from external technologies.
-
-The application should not directly depend on:
-
-- PostgreSQL
-- MinIO
-- Git
-- SVN
-- Neo4j
-- Qdrant
-- LLM providers
-
-Instead, the application depends on ports/interfaces.
-
-Example:
-
-```text
-FileStoragePort
-├── LocalFileStorageAdapter
-├── MinioFileStorageAdapter
-└── S3FileStorageAdapter
-```
-
-This makes it easier to replace infrastructure later.
-
----
-
-## Technology Stack
-
-### Backend
-
-- Java 21
-- Spring Boot 3
-- Spring Web
-- Spring Data JPA
-- Spring Validation
-- Spring Boot Actuator
-- Maven
-- Flyway
-- PostgreSQL
-- MinIO Java SDK
-
-### Infrastructure
-
-- Docker
-- Docker Compose
-- PostgreSQL
-- MinIO
-- Neo4j
-- Qdrant
-
-### Planned AI and Knowledge Components
-
-- LangChain4j
-- Qdrant
-- Neo4j
-- OpenAI
-- Azure OpenAI
-- Local LLMs
-
-### Planned Frontend
-
-- React
-- TypeScript
-- Tailwind CSS
-- Mermaid.js
-
----
-
-## Infrastructure Components
-
-### PostgreSQL
-
-PostgreSQL stores structured application data:
-
-- Projects
-- Source file metadata
-- Code symbols
-- Future import jobs
-- Future analysis jobs
-- Status information
-
-PostgreSQL does **not** store large source files directly.
-
----
-
-### MinIO
-
-MinIO is used as object storage for real files:
-
-- Uploaded ZIP archives
-- Uploaded source files
-- Extracted source files
-- Future generated documentation
-- Future export files
-- Future analysis artifacts
-
-PostgreSQL stores only the `storageKey` pointing to the file in MinIO.
-
-Example:
-
-```text
-projects/{projectId}/source/src/forms/CustomerForm.pas
-```
-
----
-
-### Neo4j
-
-Neo4j is planned for code relationships.
-
-Example:
-
-```text
-CustomerForm -> triggers -> BtnSaveClick
-BtnSaveClick -> calls -> SaveCustomer
-SaveCustomer -> writes -> CUSTOMER_TABLE
-```
-
----
-
-### Qdrant
-
-Qdrant is planned for semantic search.
-
-It will store code chunks as vector embeddings so that users can search by meaning, not only by exact words.
-
-Example:
-
-A user asks:
-
-```text
-Where is the customer saved?
-```
-
-The system may find methods such as:
-
-```text
-SaveCustomer()
-PersistClient()
-UpdatePartner()
-```
-
-even if the exact search term does not appear in the code.
-
----
-
-## AI and RAG Concept
-
-The planned AI assistant will use **RAG**.
-
-RAG means:
-
-```text
-Retrieval Augmented Generation
-```
-
-Instead of asking an AI model to guess, the system first retrieves relevant project information.
-
-Planned flow:
-
-```text
-User question
-→ create question embedding
-→ search similar code chunks in Qdrant
-→ query code relationships from Neo4j
-→ build context
-→ send context to LLM
-→ return answer with sources
-```
-
-The assistant should answer based on project sources and should say when the available information is not sufficient.
-
----
-
-## Prerequisites
-
-You need the following tools installed:
-
-- Java 21
-- Maven
-- Docker
-- Docker Compose
-- Git
-
-Optional but useful:
-
-- Postman
-- DBeaver
-- IntelliJ IDEA
-- GitHub Desktop or command line Git
-
----
-
-## Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/liRahimpour/lh.git
-cd lh
-```
-
-### 2. Start the infrastructure
-
-```bash
-cd infrastructure
-docker compose up -d
-```
-
-This starts the local infrastructure services.
-
-Expected services:
-
-- PostgreSQL
-- MinIO
-- Neo4j
-- Qdrant
-
-### 3. Start the backend
-
-```bash
-cd ../backend
-mvn spring-boot:run
-```
-
-The backend should be available at:
-
-```text
-http://localhost:8081
-```
-
-Depending on your local configuration, the port may be `8080` instead of `8081`.
-
----
-
-## Local Service URLs
-
-### Backend
-
-```text
-http://localhost:8081
-```
-
-Ping endpoint:
-
-```http
-GET /api/ping
-```
-
-### PostgreSQL
-
-```text
-Host:     localhost
-Port:     5432
-Database: legacyhub
-User:     legacyhub
-Password: legacyhub
-```
-
-### MinIO
-
-```text
-API:     http://localhost:9000
-Console: http://localhost:9001
-```
-
-### Neo4j
-
-```text
-Browser: http://localhost:7474
-Bolt:    bolt://localhost:7687
-```
-
-### Qdrant
-
-```text
-http://localhost:6333
-```
-
----
-
-## API Usage
-
-### Create a Project
-
-```http
-POST /api/projects
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "name": "Legacy System",
-  "description": "Legacy Delphi/C# system for knowledge preservation",
-  "technologyHint": "DELPHI_CSHARP_SQL"
-}
-```
-
----
-
-### Get All Projects
-
-```http
-GET /api/projects
-```
-
----
-
-### Get Project by ID
-
-```http
-GET /api/projects/{projectId}
-```
-
----
-
-## Source File Metadata API
-
-### Create Source File Metadata
-
-```http
-POST /api/projects/{projectId}/source-files
-Content-Type: application/json
-```
-
-Request body:
-
-```json
-{
-  "path": "src/forms/SingleCustomerForm.pas",
-  "filename": "SingleCustomerForm.pas",
-  "extension": "pas",
-  "language": "DELPHI",
-  "sizeBytes": 34211,
-  "contentHash": "abc123",
-  "storageKey": "projects/{projectId}/source/src/forms/SingleCustomerForm.pas"
-}
-```
-
----
-
-### Get All Source Files for a Project
-
-```http
-GET /api/projects/{projectId}/source-files
-```
-
----
-
-### Get Source File by ID
-
-```http
-GET /api/projects/{projectId}/source-files/{sourceFileId}
-```
-
----
-
-## Upload API
-
-### Upload a Single Source File
-
-```http
-POST /api/projects/{projectId}/uploads/source-file
-Content-Type: multipart/form-data
-```
-
-Postman form-data:
-
-```text
-key: file
-type: File
-value: CustomerForm.pas
-```
-
-The system will:
-
-- Store the file in MinIO
-- Detect the file language
-- Calculate a SHA-256 hash
-- Create a SourceFile metadata record in PostgreSQL
-
----
-
-### Upload a ZIP Source Archive
-
-```http
-POST /api/projects/{projectId}/uploads/source-archive
-Content-Type: multipart/form-data
-```
-
-Postman form-data:
-
-```text
-key: file
-type: File
-value: legacy-project.zip
-```
-
-The system will:
-
-- Store the original ZIP archive in MinIO
-- Extract relevant source files
-- Ignore irrelevant folders and binary files
-- Store extracted source files in MinIO
-- Create SourceFile metadata records in PostgreSQL
-
-Example response:
-
-```json
-{
-  "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
-  "archiveStorageKey": "projects/4774b9e1-0840-443c-93e4-4c1cc67f2ea0/archives/legacy-project.zip",
-  "importedFiles": 5,
-  "skippedFiles": 2
-}
-```
-
----
-
-## Analysis API
-
-### Run Symbol Analysis
-
-```http
-POST /api/projects/{projectId}/analysis/symbols
-```
-
-No request body is required.
-
-The current implementation runs synchronously and extracts code symbols from supported source files.
-
-Currently supported:
-
-- SQL files
-
-Example response:
-
-```json
-{
-  "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
-  "analyzedFiles": 1,
-  "skippedFiles": 4,
-  "detectedSymbols": 4
-}
-```
-
----
-
-## Code Symbol API
-
-### Get All Code Symbols for a Project
-
-```http
-GET /api/projects/{projectId}/symbols
-```
-
-Example response:
-
-```json
-[
-  {
-    "id": "a0907753-2f3c-46dd-b942-dbe695531911",
-    "projectId": "4774b9e1-0840-443c-93e4-4c1cc67f2ea0",
-    "sourceFileId": "18f87950-e2e9-4366-9bbf-e650a31b38b7",
-    "type": "SQL_TABLE",
-    "name": "customer",
-    "fullyQualifiedName": "customer",
-    "startLine": 1,
-    "endLine": null,
-    "createdAt": "2026-06-05T21:19:23.631786Z"
-  }
-]
-```
-
----
-
-### Get Code Symbol by ID
-
-```http
-GET /api/projects/{projectId}/symbols/{symbolId}
-```
-
----
-
-## Example Postman Setup
-
-Recommended Postman environment variable:
-
-```text
-localhost = http://localhost:8081
-```
-
-Example request:
-
-```text
-{{localhost}}/api/projects
-```
-
----
-
-## Database Migrations
-
-Flyway is used for database migrations.
-
-Current migrations:
-
-```text
-V1__create_projects_table.sql
-V2__create_source_files_table.sql
-V3__create_code_symbols_table.sql
-```
-
-Migrations are located in:
-
-```text
-backend/src/main/resources/db/migration/
-```
-
-Hibernate should validate the schema, not create it automatically.
-
-Recommended setting:
-
-```yaml
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: validate
-```
-
----
-
-## Development Workflow
-
-Recommended development order:
-
-1. Build a small vertical slice.
-2. Test with Postman.
-3. Verify data in PostgreSQL.
-4. Verify files in MinIO when upload/storage is involved.
-5. Commit changes.
-6. Let GitHub Actions run.
-7. Continue with the next small module.
-
-> **Recommendation:** Avoid building AI features before the import, storage, analysis, and metadata foundation is stable.
-
----
-
-## GitHub Actions
-
-The project uses GitHub Actions for backend CI.
-
-The CI should verify that the backend builds successfully.
-
-Typical steps:
-
-1. Checkout repository.
-2. Set up Java 21.
-3. Build backend with Maven.
-4. Run tests.
-
----
-
-## Roadmap
-
-### Phase 1: Foundation ✅
-
-- Spring Boot backend
-- PostgreSQL
-- Flyway
-- Project API
-- Source file metadata API
-- Docker Compose infrastructure
-
-### Phase 2: Storage and Upload ✅
-
-- MinIO integration
-- Single source file upload
-- ZIP upload
-- Automatic metadata extraction
-- File hashing
-- Storage key generation
-
-### Phase 3: Import In Progress
-
-- ZIP extraction
-- File inventory generation
-- Git import
-- SVN import
-
-### Phase 4: Analysis In Progress
-
-- Code symbols
-- SQL analyzer
-- C# analyzer
-- Delphi parser
-- Config parser
-- Code relations
-
-### Phase 5: Knowledge Graph Planned
-
-- Neo4j integration
-- Store code entities
-- Store relationships
-- Query dependency chains
-- Generate diagrams
-
-### Phase 6: Vector Search Planned
-
-- Chunk source code
-- Generate embeddings
-- Store embeddings in Qdrant
-- Semantic code search
-
-### Phase 7: AI Assistant Planned
-
-- RAG pipeline
-- Source-based answers
-- Code explanation
-- Onboarding questions
-- Confidence handling
-
-### Phase 8: Documentation Planned
-
-- Markdown documentation generation
-- Mermaid diagrams
-- System overview
-- Module descriptions
-- Onboarding guide
-
-### Phase 9: Transformation Support Planned
-
-- Legacy risk analysis
-- Dependency risk reports
-- Knowledge loss risk reports
-- Modernization suggestions
-- Migration planning support
-
----
-
-## Important Design Decisions
-
-### Files are not stored in PostgreSQL
-
-PostgreSQL stores metadata only.
-
-Actual files are stored in object storage such as MinIO.
-
----
-
-### MinIO is used for local object storage
-
-MinIO is S3-compatible. This makes it easier to migrate later to Amazon S3 or another compatible object storage.
-
----
-
-### The backend should remain stateless
-
-This helps later deployment to Docker, Kubernetes, or cloud environments.
-
----
-
-### Analyzer implementations should stay pluggable
-
-All language-specific analyzers should implement a common analyzer interface.
-
-This allows new analyzers to be added without changing the central analysis workflow.
-
----
-
-### Analysis should run as jobs later
-
-The current symbol analysis endpoint is synchronous.
-
-Long-running analysis tasks should later not block HTTP requests.
-
-Planned model:
-
-```http
-POST /api/projects/{projectId}/analysis
-```
-
-```text
-→ creates analysis job
-→ background worker processes job
-→ UI polls job status
-```
-
----
-
-### AI answers must be source-based
-
-The AI assistant should not freely guess.
-
-It should answer based on retrieved code, metadata, graph relationships, and documentation.
-
----
-
-## Project Status
-
-This project is experimental and under active development.
-
-It is intended as a learning project, a technical proof of concept, and a possible foundation for a real **Legacy Knowledge Hub** product.
+The long-term goal is to create a technical knowledge platform that helps teams understand, document, maintain, and modernize legacy software systems with less risk.
