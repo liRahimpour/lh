@@ -10,6 +10,7 @@ public enum CodeSymbolType {
 
     DELPHI_UNIT,
     DELPHI_FORM,
+    DELPHI_COMPONENT,
     PROCEDURE,
     FUNCTION,
     EVENT_HANDLER,
@@ -23,3 +24,8 @@ public enum CodeSymbolType {
 
     UNKNOWN
 }
+
+//example:
+// DELPHI_FORM → CustomerForm
+//DELPHI_COMPONENT → BtnSave
+//EVENT_HANDLER → BtnSaveClick
