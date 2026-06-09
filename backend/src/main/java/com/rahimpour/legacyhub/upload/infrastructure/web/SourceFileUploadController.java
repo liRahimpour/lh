@@ -52,3 +52,16 @@ public class SourceFileUploadController {
         );
     }
 }
+//TODO: add documentation for this controller
+/*
+* Beim Upload kommt die ZIP-Datei als MultipartFile (java.util standardpacket) im Spring Controller an.
+* Der SourceArchiveUploadService liest die ZIP als Byte-Array,
+* speichert das OriginalZipfile über den StorageService (Storage Module) in MinIO und öffnet
+* danach denselben Byte-Inhalt mit einem ZipInputStream.
+* Danach wird jeder ZIP-Eintrag bzw. jeder file einzeln geprüft, ignorierte Dateien werden
+* geskipt, wichtige Dateien werden gelesen, gehasht,
+* sprachlich kategorisiert und separat in MinIO gespeichert.(StorageService (Storage Module))
+* Für jede gespeicherte Datei wird ein SourceFile-dbRecord in
+* PostgreSQL angelegt. PostgreSQL enthält also nur Metadaten und den storageKey,
+* während MinIO die echten Dateiinhalte speichert.
+*/

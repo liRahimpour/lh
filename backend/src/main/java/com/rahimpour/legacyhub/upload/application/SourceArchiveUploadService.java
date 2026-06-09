@@ -35,6 +35,7 @@ public class SourceArchiveUploadService {
     }
 
     public ArchiveUploadResult uploadArchive(UUID projectId, MultipartFile archiveFile) {
+        // Validate input parameters
         if (archiveFile == null || archiveFile.isEmpty()) {
             throw new IllegalArgumentException("Archive file must not be empty");
         }
@@ -46,7 +47,7 @@ public class SourceArchiveUploadService {
         }
 
         try {
-            byte[] archiveBytes = archiveFile.getBytes();
+            byte[] archiveBytes = archiveFile.getBytes(); // Zip file as Byte code saved in Memory
             String archiveStorageKey = "projects/" + projectId + "/archives/" + originalFilename;
 
             storageService.store(
@@ -59,6 +60,8 @@ public class SourceArchiveUploadService {
             int importedFiles = 0;
             int skippedFiles = 0;
 
+            // einzeln werden die Einträge aus dem Zip gelesen und als bytes
+            // extrahiert und über storageservice un Storage database gespeichert
             try (ZipInputStream zipInputStream = new ZipInputStream(new ByteArrayInputStream(archiveBytes))) {
                 ZipEntry entry;
 
