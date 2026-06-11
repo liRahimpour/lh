@@ -1,7 +1,9 @@
 package com.rahimpour.legacyhub.coderelation.infrastructure.web;
 
 import com.rahimpour.legacyhub.coderelation.application.CodeRelationService;
+import com.rahimpour.legacyhub.coderelation.domain.CodeRelation;
 import com.rahimpour.legacyhub.codesymbol.application.CodeSymbolService;
+import com.rahimpour.legacyhub.codesymbol.domain.CodeSymbol;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,26 +26,26 @@ public class CodeRelationController {
     }
 
     @GetMapping
-    public List<CodeRelationResponse> getRelationsByProjectId(@PathVariable UUID projectId) {
+    public List<EnrichedCodeRelationResponse> getRelationsByProjectId(@PathVariable UUID projectId) {
         return relationService.getRelationsByProjectId(projectId)
                 .stream()
-                .map(CodeRelationResponse::from)
+                .map(relation -> toEnrichedResponse(projectId, relation))
                 .toList();
     }
 
     @GetMapping("/{relationId}")
-    public ResponseEntity<CodeRelationResponse> getRelationById(
+    public ResponseEntity<EnrichedCodeRelationResponse> getRelationById(
             @PathVariable UUID projectId,
             @PathVariable UUID relationId
     ) {
         return relationService.findRelationById(projectId, relationId)
-                .map(CodeRelationResponse::from)
+                .map(relation -> toEnrichedResponse(projectId, relation))
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/symbols/{symbolId}/outgoing")
-    public ResponseEntity<List<CodeRelationResponse>> getOutgoingRelations(
+    public ResponseEntity<List<EnrichedCodeRelationResponse>> getOutgoingRelations(
             @PathVariable UUID projectId,
             @PathVariable UUID symbolId
     ) {
@@ -51,16 +53,16 @@ public class CodeRelationController {
             return ResponseEntity.notFound().build();
         }
 
-        List<CodeRelationResponse> response = relationService.getOutgoingRelations(projectId, symbolId)
+        List<EnrichedCodeRelationResponse> response = relationService.getOutgoingRelations(projectId, symbolId)
                 .stream()
-                .map(CodeRelationResponse::from)
+                .map(relation -> toEnrichedResponse(projectId, relation))
                 .toList();
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/symbols/{symbolId}/incoming")
-    public ResponseEntity<List<CodeRelationResponse>> getIncomingRelations(
+    public ResponseEntity<List<EnrichedCodeRelationResponse>> getIncomingRelations(
             @PathVariable UUID projectId,
             @PathVariable UUID symbolId
     ) {
@@ -68,9 +70,9 @@ public class CodeRelationController {
             return ResponseEntity.notFound().build();
         }
 
-        List<CodeRelationResponse> response = relationService.getIncomingRelations(projectId, symbolId)
+        List<EnrichedCodeRelationResponse> response = relationService.getIncomingRelations(projectId, symbolId)
                 .stream()
-                .map(CodeRelationResponse::from)
+                .map(relation -> toEnrichedResponse(projectId, relation))
                 .toList();
 
         return ResponseEntity.ok(response);
@@ -83,5 +85,16 @@ public class CodeRelationController {
         } catch (IllegalArgumentException exception) {
             return false;
         }
+    }
+
+    private EnrichedCodeRelationResponse toEnrichedResponse(UUID projectId, CodeRelation relation) {
+        CodeSymbol sourceSymbol = codeSymbolService.getSymbolById(projectId, relation.getSourceSymbolId());
+        CodeSymbol targetSymbol = codeSymbolService.getSymbolById(projectId, relation.getTargetSymbolId());
+
+        return EnrichedCodeRelationResponse.from(
+                relation,
+                sourceSymbol,
+                targetSymbol
+        );
     }
 } //TODO: exaptionhandling muss global gesetzt werden und dann controller und service angepasst werden
