@@ -45,11 +45,23 @@ public class JavaSourceFileAnalyzer implements SourceFileAnalyzer {
             Pattern.MULTILINE
     );
 
-    private static final Pattern METHOD_PATTERN = Pattern.compile(
+    private static final Pattern METHOD_WITH_BODY_PATTERN = Pattern.compile(
             "^\\s*(?:@[A-Za-z_][A-Za-z0-9_]*(?:\\([^)]*\\))?\\s*)*"
                     + "(?:public|protected|private|static|final|abstract|synchronized|native|default|strictfp\\s+)*"
+                    + "(?!if\\b|for\\b|while\\b|switch\\b|catch\\b|return\\b|new\\b)"
                     + "[A-Za-z_][A-Za-z0-9_<>,\\[\\]\\.?\\s]*\\s+"
-                    + "([A-Za-z_][A-Za-z0-9_]*)\\s*\\([^;{}]*\\)\\s*(?:throws\\s+[A-Za-z0-9_,\\.\\s]+)?\\s*\\{",
+                    + "([A-Za-z_][A-Za-z0-9_]*)\\s*\\([^;{}]*\\)\\s*"
+                    + "(?:throws\\s+[A-Za-z0-9_,\\.\\s]+)?\\s*\\{",
+            Pattern.MULTILINE
+    );
+
+    private static final Pattern METHOD_DECLARATION_PATTERN = Pattern.compile(
+            "^\\s*(?:@[A-Za-z_][A-Za-z0-9_]*(?:\\([^)]*\\))?\\s*)*"
+                    + "(?:public|protected|private|static|final|abstract|default\\s+)*"
+                    + "(?!if\\b|for\\b|while\\b|switch\\b|catch\\b|return\\b|new\\b)"
+                    + "[A-Za-z_][A-Za-z0-9_<>,\\[\\]\\.?\\s]*\\s+"
+                    + "([A-Za-z_][A-Za-z0-9_]*)\\s*\\([^;{}]*\\)\\s*"
+                    + "(?:throws\\s+[A-Za-z0-9_,\\.\\s]+)?\\s*;",
             Pattern.MULTILINE
     );
 
@@ -78,7 +90,8 @@ public class JavaSourceFileAnalyzer implements SourceFileAnalyzer {
         findAll(content, ENUM_PATTERN, CodeSymbolType.ENUM, packageName, symbols);
         findAll(content, RECORD_PATTERN, CodeSymbolType.RECORD, packageName, symbols);
         findAll(content, ANNOTATION_PATTERN, CodeSymbolType.ANNOTATION, packageName, symbols);
-        findAll(content, METHOD_PATTERN, CodeSymbolType.METHOD, packageName, symbols);
+        findAll(content, METHOD_WITH_BODY_PATTERN, CodeSymbolType.METHOD, packageName, symbols);
+        findAll(content, METHOD_DECLARATION_PATTERN, CodeSymbolType.METHOD, packageName, symbols);
         findAll(content, FIELD_PATTERN, CodeSymbolType.FIELD, packageName, symbols);
 
         return symbols;
