@@ -34,6 +34,7 @@ public class FileLanguageDetector {
             case "pas" -> SourceFileLanguage.DELPHI;
             case "dfm" -> SourceFileLanguage.DELPHI_FORM;
             case "dpr" -> SourceFileLanguage.DELPHI_PROJECT;
+            case "java" -> SourceFileLanguage.JAVA;
             case "sql" -> SourceFileLanguage.SQL;
             case "xml" -> SourceFileLanguage.XML;
             case "json" -> SourceFileLanguage.JSON;
