@@ -19,7 +19,7 @@ public class SymbolAnalysisService {
     private final SourceFileService sourceFileService;
     private final SourceFileContentLoader contentLoader;
     private final CodeSymbolService codeSymbolService;
-    private final List<SourceFileAnalyzer> analyzers;
+    private final List<SourceFileAnalyzer> analyzers; //Spring füllt diese Liste automatisch mit allen Klassen, die dieses Interface implementieren und als Bean registriert sind.
 
     public SymbolAnalysisService(
             SourceFileService sourceFileService,
