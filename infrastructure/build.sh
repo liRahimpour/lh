@@ -33,7 +33,7 @@ echo " "
 sep "maven build backend"
 # maven build backend
 cd ../backend || exit
-mvn clean install -DskipTests
+mvn clean install #-DskipTests
 STATUS=$?
 if [ $STATUS -eq 0 ]; then
   sep "Creation of Backend successful"

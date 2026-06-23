@@ -47,8 +47,9 @@ public class JavaSourceFileAnalyzer implements SourceFileAnalyzer {
 
     private static final Pattern METHOD_WITH_BODY_PATTERN = Pattern.compile(
             "^\\s*(?:@[A-Za-z_][A-Za-z0-9_]*(?:\\([^)]*\\))?\\s*)*"
-                    + "(?:public|protected|private|static|final|abstract|synchronized|native|default|strictfp\\s+)*"
+                    + "(?:(?:public|protected|private|static|final|abstract|synchronized|native|default|strictfp)\\s+)*+"
                     + "(?!if\\b|for\\b|while\\b|switch\\b|catch\\b|return\\b|new\\b)"
+                    + "(?!class\\s+|interface\\s+|enum\\s+|record\\s+|@interface\\s+)"
                     + "[A-Za-z_][A-Za-z0-9_<>,\\[\\]\\.?\\s]*\\s+"
                     + "([A-Za-z_][A-Za-z0-9_]*)\\s*\\([^;{}]*\\)\\s*"
                     + "(?:throws\\s+[A-Za-z0-9_,\\.\\s]+)?\\s*\\{",
@@ -67,7 +68,7 @@ public class JavaSourceFileAnalyzer implements SourceFileAnalyzer {
 
     private static final Pattern FIELD_PATTERN = Pattern.compile(
             "^\\s*(?:@[A-Za-z_][A-Za-z0-9_]*(?:\\([^)]*\\))?\\s*)*"
-                    + "(?:public|protected|private|static|final|volatile|transient\\s+)*"
+                    + "(?:(?:public|protected|private|static|final|volatile|transient)\\s+)*"
                     + "[A-Za-z_][A-Za-z0-9_<>,\\[\\]\\.?]*\\s+"
                     + "([A-Za-z_][A-Za-z0-9_]*)\\s*(?:=\\s*[^;]+)?;",
             Pattern.MULTILINE
