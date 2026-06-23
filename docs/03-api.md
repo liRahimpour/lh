@@ -524,6 +524,10 @@ The application consists of the Spring Boot backend and supporting infrastructur
 | PostgreSQL | `localhost:5432` | Stores structured metadata, symbols, and relations | No |
 | MinIO S3 API | `http://localhost:9000` | Object-storage API used by the backend | No |
 | MinIO Console | `http://localhost:9001` | Browser UI for inspecting stored objects | No |
+| Neo4j Browser	| `http://localhost:7474`	| Graph database browser | No |
+| Neo4j Bolt	| `bolt://localhost:7687`	| Neo4j  application connection | No |
+| Qdrant API	| `http://localhost:6333`	| Vector  database API | No |
+| Qdrant Dashboard	| `http://localhost:6333/dashboard`	| Vector database browser UI | No |
 
 ### Important distinction
 
