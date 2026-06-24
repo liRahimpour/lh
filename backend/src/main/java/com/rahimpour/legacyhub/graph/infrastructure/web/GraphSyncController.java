@@ -24,11 +24,12 @@ public class GraphSyncController {
     @ResponseStatus(HttpStatus.CREATED)
     public GraphSyncResponse syncProject(@PathVariable UUID projectId) {
         GraphSyncService.GraphSyncResult result =
-                graphSyncService.syncProjectSymbols(projectId);
+                graphSyncService.syncProject(projectId);
 
         return new GraphSyncResponse(
                 result.projectId(),
-                result.syncedSymbols()
+                result.syncedSymbols(),
+                result.syncedRelations()
         );
     }
 }

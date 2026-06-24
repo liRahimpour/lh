@@ -1,5 +1,6 @@
 package com.rahimpour.legacyhub.graph.infrastructure.neo4j;
 
+import com.rahimpour.legacyhub.coderelation.domain.CodeRelation;
 import com.rahimpour.legacyhub.codesymbol.domain.CodeSymbol;
 import com.rahimpour.legacyhub.graph.ports.CodeGraphPort;
 import org.neo4j.driver.Driver;
@@ -48,6 +49,38 @@ public class Neo4jCodeGraphAdapter implements CodeGraphPort {
     }
 
     @Override
+    public void syncRelations(UUID projectId, List<CodeRelation> relations) {
+        if (relations.isEmpty()) {
+            return;
+        }
+
+        try (Session session = driver.session()) {
+            session.executeWriteWithoutResult(tx -> {
+                for (CodeRelation relation : relations) {
+                    String relationType = relation.getType().name();
+
+                    String cypher = """
+                        MATCH (source:CodeSymbol {
+                            id: $sourceSymbolId,
+                            projectId: $projectId
+                        })
+                        MATCH (target:CodeSymbol {
+                            id: $targetSymbolId,
+                            projectId: $projectId
+                        })
+                        MERGE (source)-[relationship:%s]->(target)
+                        SET relationship.id = $relationId,
+                            relationship.projectId = $projectId,
+                            relationship.createdAt = $createdAt
+                        """.formatted(relationType);
+
+                    tx.run(cypher, toRelationParameters(relation));
+                }
+            });
+        }
+    }
+
+    @Override
     public void deleteProjectGraph(UUID projectId) {
         try (Session session = driver.session()) {
             session.executeWriteWithoutResult(tx ->
@@ -73,6 +106,18 @@ public class Neo4jCodeGraphAdapter implements CodeGraphPort {
         parameters.put("fullyQualifiedName", symbol.getFullyQualifiedName());
         parameters.put("startLine", symbol.getStartLine());
         parameters.put("endLine", symbol.getEndLine());
+
+        return parameters;
+    }
+
+    private Map<String, Object> toRelationParameters(CodeRelation relation) {
+        Map<String, Object> parameters = new HashMap<>();
+
+        parameters.put("relationId", relation.getId().toString());
+        parameters.put("projectId", relation.getProjectId().toString());
+        parameters.put("sourceSymbolId", relation.getSourceSymbolId().toString());
+        parameters.put("targetSymbolId", relation.getTargetSymbolId().toString());
+        parameters.put("createdAt", relation.getCreatedAt().toString());
 
         return parameters;
     }
