@@ -10,6 +10,12 @@ spring:
     password: admin
     driver-class-name: org.postgresql.Driver
 
+  neo4j:
+    uri: ${NEO4J_URI:bolt://localhost:7687}
+    authentication:
+      username: ${NEO4J_USERNAME:neo4j}
+      password: ${NEO4J_PASSWORD:adminadmin}
+
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
@@ -33,6 +39,7 @@ legacyhub:
       access-key: admin
       secret-key: adminadmin
       bucket: legacyhub
+
 logging:
   level:
     root: INFO
