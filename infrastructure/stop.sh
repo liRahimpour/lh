@@ -2,7 +2,7 @@
 #set environment vars.
 . ./env_unx
 
-docker-compose -p lh -f docker-compose.yml down -v
+docker-compose -p lh -f docker-compose.yml -f docker-compose.backend.yml down
 
 for VOL in $VOLUMES; do
   # Get the volume creation date

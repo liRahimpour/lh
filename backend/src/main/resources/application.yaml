@@ -5,16 +5,16 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://lh-postgres:5432/db
-    username: admin
-    password: admin
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db}
+    username: ${SPRING_DATASOURCE_USERNAME:admin}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin}
     driver-class-name: org.postgresql.Driver
 
   neo4j:
-    uri: ${NEO4J_URI:bolt://localhost:7687}
+    uri: ${SPRING_NEO4J_URI:bolt://localhost:7687}
     authentication:
-      username: ${NEO4J_USERNAME:neo4j}
-      password: ${NEO4J_PASSWORD:adminadmin}
+      username: ${SPRING_NEO4J_AUTHENTICATION_USERNAME:neo4j}
+      password: ${SPRING_NEO4J_AUTHENTICATION_PASSWORD:adminadmin}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -35,10 +35,10 @@ spring:
 legacyhub:
   storage:
     minio:
-      endpoint: http://lh-minio:9000
-      access-key: admin
-      secret-key: adminadmin
-      bucket: legacyhub
+      endpoint: ${LEGACYHUB_STORAGE_MINIO_ENDPOINT:http://localhost:9000}
+      access-key: ${LEGACYHUB_STORAGE_MINIO_ACCESS_KEY:admin}
+      secret-key: ${LEGACYHUB_STORAGE_MINIO_SECRET_KEY:adminadmin}
+      bucket: ${LEGACYHUB_STORAGE_MINIO_BUCKET:legacyhub}
 
 logging:
   level:

@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ../backend
+    container_name: lh-backend
+    ports:
+      - "8081:8081"
+    networks:
+      - lh-network
+    depends_on:
+      - postgres
+      - minio
+      - neo4j
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/db
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
+
+      LEGACYHUB_STORAGE_MINIO_ENDPOINT: http://minio:9000
+      LEGACYHUB_STORAGE_MINIO_ACCESS_KEY: admin
+      LEGACYHUB_STORAGE_MINIO_SECRET_KEY: adminadmin
+      LEGACYHUB_STORAGE_MINIO_BUCKET: legacyhub
+
+      SPRING_NEO4J_URI: bolt://neo4j:7687
+      SPRING_NEO4J_AUTHENTICATION_USERNAME: neo4j
+      SPRING_NEO4J_AUTHENTICATION_PASSWORD: adminadmin
+
+networks:
+  lh-network:
+    external: true

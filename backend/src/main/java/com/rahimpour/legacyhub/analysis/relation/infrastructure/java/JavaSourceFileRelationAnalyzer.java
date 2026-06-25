@@ -1,6 +1,7 @@
 package com.rahimpour.legacyhub.analysis.relation.infrastructure.java;
 
 import com.rahimpour.legacyhub.analysis.relation.domain.DetectedRelation;
+import com.rahimpour.legacyhub.analysis.relation.domain.RelationAnalysisContext;
 import com.rahimpour.legacyhub.analysis.relation.domain.SourceFileRelationAnalyzer;
 import com.rahimpour.legacyhub.coderelation.domain.CodeRelationType;
 import com.rahimpour.legacyhub.codesymbol.domain.CodeSymbol;
@@ -21,7 +22,8 @@ public class JavaSourceFileRelationAnalyzer implements SourceFileRelationAnalyze
     }
 
     @Override
-    public List<DetectedRelation> analyze(List<CodeSymbol> symbols) {
+    public List<DetectedRelation> analyze(RelationAnalysisContext context) {
+        List<CodeSymbol> symbols = context.sourceFileSymbols();
         Optional<CodeSymbol> containerSymbol = findMainContainer(symbols);
 
         if (containerSymbol.isEmpty()) {

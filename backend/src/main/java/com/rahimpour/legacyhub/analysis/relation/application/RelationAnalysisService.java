@@ -1,6 +1,8 @@
 package com.rahimpour.legacyhub.analysis.relation.application;
 
+import com.rahimpour.legacyhub.analysis.application.SourceFileContentLoader;
 import com.rahimpour.legacyhub.analysis.relation.domain.DetectedRelation;
+import com.rahimpour.legacyhub.analysis.relation.domain.RelationAnalysisContext;
 import com.rahimpour.legacyhub.analysis.relation.domain.SourceFileRelationAnalyzer;
 import com.rahimpour.legacyhub.coderelation.application.CodeRelationService;
 import com.rahimpour.legacyhub.coderelation.domain.CodeRelation;
@@ -24,17 +26,20 @@ public class RelationAnalysisService {
     private final CodeRelationService codeRelationService;
     private final SourceFileService sourceFileService;
     private final List<SourceFileRelationAnalyzer> analyzers;
+    private final SourceFileContentLoader sourceFileContentLoader;
 
     public RelationAnalysisService(
             CodeSymbolService codeSymbolService,
             CodeRelationService codeRelationService,
             SourceFileService sourceFileService,
-            List<SourceFileRelationAnalyzer> analyzers
+            List<SourceFileRelationAnalyzer> analyzers,
+            SourceFileContentLoader sourceFileContentLoader
     ) {
         this.codeSymbolService = codeSymbolService;
         this.codeRelationService = codeRelationService;
         this.sourceFileService = sourceFileService;
         this.analyzers = analyzers;
+        this.sourceFileContentLoader = sourceFileContentLoader;
     }
 
     @Transactional
@@ -65,14 +70,28 @@ public class RelationAnalysisService {
                 continue;
             }
 
-            SourceFileRelationAnalyzer analyzer = findAnalyzer(sourceFile.getLanguage());
+            List<SourceFileRelationAnalyzer> matchingAnalyzers = analyzers.stream()
+                    .filter(analyzer -> analyzer.supports(sourceFile.getLanguage()))
+                    .toList();
 
-            if (analyzer == null) {
+            if (matchingAnalyzers.isEmpty()) {
                 skippedFiles++;
                 continue;
             }
 
-            List<DetectedRelation> detectedRelations = analyzer.analyze(fileSymbols);
+            String sourceContent = sourceFileContentLoader.loadContent(sourceFile);
+
+            RelationAnalysisContext context = new RelationAnalysisContext(
+                    sourceFile,
+                    sourceContent,
+                    fileSymbols,
+                    symbols
+            );
+
+            List<DetectedRelation> detectedRelations = matchingAnalyzers.stream()
+                    .flatMap(analyzer -> analyzer.analyze(context).stream())
+                    .distinct()
+                    .toList();
 
             List<CodeRelation> codeRelations = detectedRelations.stream()
                     .map(detected -> CodeRelation.create(
@@ -95,13 +114,6 @@ public class RelationAnalysisService {
                 skippedFiles,
                 savedRelations.size()
         );
-    }
-
-    private SourceFileRelationAnalyzer findAnalyzer(com.rahimpour.legacyhub.sourcefile.domain.SourceFileLanguage language) {
-        return analyzers.stream()
-                .filter(analyzer -> analyzer.supports(language))
-                .findFirst()
-                .orElse(null);
     }
 
     public record RelationAnalysisResult(

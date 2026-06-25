@@ -1,5 +1,3 @@
-export DATA_VOLUME=../lh-dev-postgres/pg_in_docker/:/var/lib/postgresql/data
-
 export POSTGRES_USER=admin
 export POSTGRES_PASSWORD=admin
 export POSTGRES_DB=db
