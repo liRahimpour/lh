@@ -5,9 +5,13 @@ import com.rahimpour.legacyhub.sourcefile.domain.SourceFileLanguage;
 
 import java.util.List;
 
+import java.util.List;
+
+import java.util.List;
+
 public interface SourceFileRelationAnalyzer {
 
     boolean supports(SourceFileLanguage language);
 
-    List<DetectedRelation> analyze(List<CodeSymbol> symbols);
-} // wie bei Sourcefile symbol
+    List<DetectedRelation> analyze(RelationAnalysisContext context);
+}// wie bei Sourcefile symbol

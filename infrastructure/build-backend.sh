@@ -58,11 +58,12 @@ cd ../infrastructure || exit
 
 sep "tear down all existing containers"
 # tear down all existing containers
-docker-compose -p lh -f docker-compose.yml down
+docker-compose -p lh -f docker-compose.yml -f docker-compose.backend.yml down
 
 sep "startup all containers (Modules/Services)"
 # startup all containers (Modules/Services)
-docker-compose -p lh -f docker-compose.yml up --build --remove-orphans -d
+#docker-compose  -f docker-compose.yml up --build --remove-orphans -d
+docker-compose -p lh -f docker-compose.yml -f docker-compose.backend.yml up -d --build --remove-orphans
 
 sep "cleanup matured Docker-stuff (containers, Unused images)"
 # cleanup matured Docker-stuff (containers, Unused images)
